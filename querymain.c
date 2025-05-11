@@ -13,13 +13,21 @@ void displayMenu() {
     printf("3. Exit\n");
     printf("Enter choice: ");
 }
-int main(void) {
+int main1(void) {
     MYSQL *conn;
     MYSQL_RES *res;
     MYSQL_ROW row;
 
+
+
+    char *server = "localhost";
+    char *user = "john";
+    char *password = "password";
+    char *database = "studentdb";
     conn = mysql_init(NULL);
-    if (!mysql_real_connect(conn, "localhost", "your_user", "your_pass", "sensordata", 0, NULL, 0)) {
+    /* Connect to database */
+    if (!mysql_real_connect(conn, server, user, password, database, 0, NULL, 0))
+    {
         fprintf(stderr, "Connection error: %s\n", mysql_error(conn));
         exit(1);
     }
@@ -30,9 +38,10 @@ int main(void) {
         scanf("%d", &choice);
 
         if (choice == 1) {
-            mysql_query(conn, "SELECT AVG(temperature), AVG(humidity) FROM readings WHERE datainserttime > NOW() - INTERVAL 3 DAY");
-            res = mysql_store_result(conn);
-            row = mysql_fetch_row(res);
+
+
+
+            mysql_fetch_row(res);
             printf("3-day average temp: %s°F, humidity: %s%%\n", row[0], row[1]);
             mysql_free_result(res);
         }

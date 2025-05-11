@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <mysql/mysql.h>
 
 #define MAX_TIME 85
 #define DHT11PIN 7
@@ -92,18 +93,21 @@ void write(int x, int y, const char data[]){
 
 void insert_into_db(float temperature, float humidity) {
     MYSQL *conn;
+    MYSQL_RES *res;
+    MYSQL_ROW row;
+
+
+
+    char *server = "localhost";
+    char *user = "john";
+    char *password = "password";
+    char *database = "studentdb";
     conn = mysql_init(NULL);
-
-    if (conn == NULL) {
-        fprintf(stderr, "mysql_init() failed\n");
-        return;
-    }
-
-    if (mysql_real_connect(conn, "localhost", "your_username", "your_password",
-                           "sensordata", 0, NULL, 0) == NULL) {
-        fprintf(stderr, "mysql_real_connect() failed\n");
-        mysql_close(conn);
-        return;
+    /* Connect to database */
+    if (!mysql_real_connect(conn, server, user, password, database, 0, NULL, 0))
+    {
+        fprintf(stderr, "Connection error: %s\n", mysql_error(conn));
+        exit(1);
     }
 
     char query[256];
@@ -167,7 +171,7 @@ void dht11_read_val(){
         float humidity = dht11_val[0] + dht11_val[1] / 100.0;
 
     insert_into_db(farenheit, humidity);
-    
+
     clear();
     write(0, 0 , "temp");
     write(6, 0 , "hum");
